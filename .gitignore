@@ -53,3 +53,5 @@ dkms.conf
 
 # Configuration Files
 .vscode/*
+sim/*.pdsbak
+sim/*.workspace
