@@ -1,14 +1,14 @@
 NAME = MCC_PRJ
 
 CC = avr-gcc
-# Lambrar de remover -g depois de realizar os testes
+# Lembrar de remover -g depois de realizar os testes
 CFLAGS = -g -Wall -Os -Wl,--gc-sections -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega328p -DF_CPU=16000000UL -iquoteinclude
 LDLIBS = 
 LDFLAGS = -mmcu=atmega328p
 
 SRC := $(wildcard src/*.c)
-OBJ := $(SRC:src/%.c=%.o)
-ELF := $(NAME).elf
+OBJ := $(SRC:src/%.c=obj/%.o)
+ELF := bin/$(NAME).elf
 HEX := $(ELF:.elf=.hex)
 
 h: hex
@@ -25,7 +25,7 @@ $(HEX): $(ELF)
 $(ELF): $(OBJ)
 	$(CC) -o $(ELF) $(OBJ) $(LDFLAGS) $(CFLAGS) -MMD -MP
 
-%.o: src/%.c
+obj/%.o: src/%.c
 	$(CC) -c $< -o $@ $(CFLAGS) -MMD -MP
 
 .PHONY: clean
