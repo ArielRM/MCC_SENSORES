@@ -28,6 +28,10 @@ $(ELF): $(OBJ)
 obj/%.o: src/%.c
 	$(CC) -c $< -o $@ $(CFLAGS) -MMD -MP
 
+arduino: $(HEX)
+	avrdude -pm328p -carduino -P/dev/ttyS3 -Uflash:w:$<:a
+	#                         -P/dev/ttyS(COMn)
+
 .PHONY: clean
 clean:
 	@rm -rf $(OBJ) $(ELF) $(HEX) $(OBJ:%.o=%.d)
