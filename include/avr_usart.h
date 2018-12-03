@@ -13,6 +13,8 @@
 #include <avr/io.h>
 #include <stdio.h>
 
+#define USART_BUFFER_SIZE 8
+
 #ifndef _IO
 #define _IO volatile uint8_t
 #endif
@@ -81,5 +83,18 @@ typedef struct
 } UART_Type;
 
 #define USART_0 ((UART_Type *)&UCSR0A)
+
+void usart_init(uint16_t baud);
+
+void usart_tx_init(void);
+uint8_t usart_send(uint8_t *data, uint8_t size, void (*callback)(void));
+
+void usart_rx_init(void);
+uint8_t usart_receive(uint8_t size, void (*onReceived)(uint8_t *data, uint8_t received));
+void usart_rx_cancell();
+
+// Error Codes
+#define USART_BUFFER_OVF 1
+#define USART_BUSY 2
 
 #endif
