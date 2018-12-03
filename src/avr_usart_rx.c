@@ -1,16 +1,13 @@
 #include "avr_usart.h"
 #include <avr/interrupt.h>
 
-static volatile struct
+static struct
 {
 	uint8_t data[USART_BUFFER_SIZE];
 	uint8_t size;
 	uint8_t received;
 	void (*callback)(uint8_t *data, uint8_t received);
 } usart_rx_info;
-
-static uint8_t usart_rx_size, usart_rx_received = 0, usart_rx_buffer[USART_BUFFER_SIZE];
-static void (*usart_rx_onReceived)(uint8_t *data, uint8_t size);
 
 void usart_rx_init(void)
 {
