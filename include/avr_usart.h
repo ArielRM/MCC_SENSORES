@@ -1,11 +1,3 @@
-/*
- * avr_usart.h
- *
- *  Created on: May 1, 2018
- *      Author: Renan Augusto Starke
- *      Instituto Federal de Santa Catarina
- */
-
 #ifndef _USART_H
 #define _USART_H
 
@@ -13,7 +5,8 @@
 #include <avr/io.h>
 #include <stdio.h>
 
-#define USART_BUFFER_SIZE 8
+/* RING BUFFER SIZE, USE A POWER OF 2, MAX OF 7^2 - 1 */
+#define USART_FIFO_SIZE 8
 
 #ifndef _IO
 #define _IO volatile uint8_t
@@ -84,17 +77,24 @@ typedef struct
 
 #define USART_0 ((UART_Type *)&UCSR0A)
 
-void usart_init(uint16_t baud);
+/* Receive one byte: busy waiting */
+uint8_t USART_rx();
 
-void usart_tx_init(void);
-uint8_t usart_send(uint8_t *data, uint8_t size, void (*callback)(void));
+/* Writes at least size bytes into data and returns the number of bytes writen */
+uint8_t USART_read(uint8_t *data, uint8_t size);
 
-void usart_rx_init(void);
-uint8_t usart_receive(uint8_t size, void (*onReceived)(uint8_t *data, uint8_t received));
-void usart_rx_cancell();
+/* Returns the number of bytes available to read */
+uint8_t USART_data_available();
 
-// Error Codes
-#define USART_BUFFER_OVF 1
-#define USART_BUSY 2
+/* Send one byte: busy waiting */
+void USART_tx(uint8_t data);
+
+/* Initializes USART end returns stream pointer  */
+FILE *USART_init(uint16_t bauds);
+
+#ifdef AVR_USART_SRC
+void USART_RX_init();
+void USART_tx_init();
+#endif
 
 #endif
