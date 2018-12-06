@@ -7,8 +7,8 @@
 #include "avr_usart.h"
 #include "avr_timer.h"
 
-#define MBRTU_CMD_WRITE 0x01
-#define MBRTU_CMD_READ 0x02
+#define MBRTU_CMD_WRITE 0x06
+#define MBRTU_CMD_READ 0x03
 
 #define MBRTU_DATA_BYTES 2 
 
