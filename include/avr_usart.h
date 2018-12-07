@@ -77,14 +77,8 @@ typedef struct
 
 #define USART_0 ((UART_Type *)&UCSR0A)
 
-/* Receive one byte: busy waiting */
-uint8_t USART_rx();
-
-/* Writes at least size bytes into data and returns the number of bytes writen */
-uint8_t USART_read(uint8_t *data, uint8_t size);
-
-/* Returns the number of bytes available to read */
-uint8_t USART_data_available();
+void USART_read(volatile uint8_t *data, uint8_t size);
+uint8_t USART_data_size();
 
 /* Send one byte: busy waiting */
 void USART_tx(uint8_t data);
