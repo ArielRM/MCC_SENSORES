@@ -33,8 +33,7 @@ int main()
 	DDRB |= (1 << PB5);
 	PORTB &= ~(1 << PB5);
 
-	USART_Init(B9600);
-	FILE *f = get_usart_stream();
+	FILE *f = USART_init(B9600);
 
 	TWI_Master_Initialise();
 
