@@ -1,5 +1,3 @@
-#include <avr/io.h>
-#include <util/delay.h>
 #include <avr/interrupt.h>
 
 #include "modbus_rtu.h"
@@ -57,7 +55,5 @@ int main(void)
 		case MODBUS_RTU_ERR:
 			break;
 		}
-	}
-
 	return 0;
 }
