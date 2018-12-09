@@ -2,66 +2,29 @@
 #include <avr/interrupt.h>
 #include "avr_usart.h"
 
-
 static volatile struct
 {
-	volatile uint8_t data[USART_FIFO_SIZE];
-	volatile uint8_t head;
-	volatile uint8_t tail;
-} USART_fifo;
+	volatile uint8_t *data;
+	volatile uint8_t size_max;
+	volatile uint8_t size;
+} USART_buffer;
 
-static uint8_t USART_fifo_size()
+void USART_read(volatile uint8_t *data, uint8_t size)
 {
-	return USART_fifo.tail - USART_fifo.head;
+	USART_buffer.data = data;
+	USART_buffer.size_max = size;
+	USART_buffer.size = 0;
 }
 
-static uint8_t USART_fifo_full()
+uint8_t USART_data_size()
 {
-	return USART_fifo_size() == USART_FIFO_SIZE;
-}
-
-static uint8_t USART_fifo_empty()
-{
-	return USART_fifo.head == USART_fifo.tail;
-}
-
-static uint8_t USART_fifo_wrap_around(uint8_t index)
-{
-	return (USART_FIFO_SIZE - 1) & index;
-}
-
-static uint8_t USART_fifo_enqueue(uint8_t data)
-{
-	if (USART_fifo_full())
-		return 0;
-	USART_fifo.data[USART_fifo_wrap_around(USART_fifo.tail++)] = data;
-	return 1;
-}
-
-static uint8_t USART_fifo_dequeue(uint8_t *data)
-{
-	if (USART_fifo_empty())
-		return 0;
-	*data = USART_fifo.data[USART_fifo_wrap_around(USART_fifo.head++)];
-	return 1;
-}
-
-uint8_t USART_read(uint8_t *data, uint8_t size)
-{
-	uint8_t i;
-	for (i = 0; i < size && USART_fifo_dequeue(&data[i]); i++)
-		;
-	return i;
-}
-
-uint8_t USART_data_available()
-{
-	return USART_fifo_size();
+	return USART_buffer.size;
 }
 
 ISR(USART_RX_vect)
 {
-	USART_fifo_enqueue(USART_0->UDR_);
+	if (USART_buffer.size < USART_buffer.size_max)
+		USART_buffer.data[USART_buffer.size++] = USART_0->UDR_;
 }
 
 /* Receive one byte: busy waiting */
