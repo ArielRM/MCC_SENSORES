@@ -3,8 +3,8 @@
 
 #define MODBUS_RTU_ADDR 0x15
 
-#define MODBUS_RTU_CMD_W 0x06
-#define MODBUS_RTU_CMD_R 0x03
+#define MODBUS_RTU_CMD_W 0x01
+#define MODBUS_RTU_CMD_R 0x02
 
 #define MODBUS_RTU_CMD_CRC 0xFF
 #define MODBUS_RTU_CMD_REG 0xFE
