@@ -55,5 +55,6 @@ int main(void)
 		case MODBUS_RTU_ERR:
 			break;
 		}
+	}
 	return 0;
 }
