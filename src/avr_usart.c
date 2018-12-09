@@ -1,14 +1,37 @@
+#define AVR_USART_SRC
+
+#include <stdio.h>
+#include <avr/interrupt.h>
+#include <stdint.h>
 #include "avr_usart.h"
+#include "bits.h"
 
-void usart_init(uint16_t baud)
+static int usart_putchar(char c, FILE *fp)
 {
-	USART_0->UCSR_A.BITS.U2X = 0;  // Garante que o mode Double Speed está desativado
-	USART_0->UCSR_C.BITS.UPM0 = 0; // Sem paridade
-	USART_0->UCSR_C.BITS.UPM1 = 0; // Sem paridade
-	USART_0->UCSR_C.BITS.USBS = 0; // 1 stop bit
-	USART_0->UBRR_H = ((uint16_t)baud >> 8);
-	USART_0->UBRR_L = baud;
+	USART_tx(c);
 
-	usart_rx_init();
-	usart_tx_init();
+	return 0;
+}
+/* Stream init for printf  */
+static FILE usart_str = FDEV_SETUP_STREAM(usart_putchar, NULL, _FDEV_SETUP_WRITE);
+
+FILE *USART_init(uint16_t bauds)
+{
+
+	USART_0->UBRR_H = (uint8_t)(bauds >> 8);
+	USART_0->UBRR_L = bauds;
+
+	/* Disable double speed  */
+	USART_0->UCSR_A.MASK = 0;
+	
+	USART_RX_init();
+	USART_tx_init();
+
+	/* Asynchronous mode:
+	 * - 8 data bits
+	 * - 1 stop bit
+	 * - no parity 	 */
+	USART_0->UCSR_C.MASK = SET(UCSZ01) | SET(UCSZ00);
+
+	return &usart_str;
 }
