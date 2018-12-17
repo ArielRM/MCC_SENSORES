@@ -31,8 +31,6 @@ static inline void timeout()
 
 int main()
 {
-	// inicialização do sensor
-
 	modbus_rtu_init();
 
 	DDRB |= (1 << PB5) | (1 << PB0) | (1 << PB1);
@@ -42,12 +40,11 @@ int main()
 
 	mpu6050_init();
 
-	uint16_t* sensor_data[] = {&mpu.acer_x, &mpu.gyro_x};
+	volatile uint16_t* sensor_data[] = {&mpu.acer_x, &mpu.gyro_x};
 
 	uint8_t i = 0, crc_count = 0, timeout_count = 0;
 	while (1)
 	{
-		// non-blocking code que salva informações do sensor em sensor_data;
 		mpu6050_request();
 		
 		switch (modbus_rtu_check())
