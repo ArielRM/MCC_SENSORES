@@ -6,11 +6,6 @@
 
 #include "mpu6050.h"
 #include "../include/avr_usart.h"
-//#include "avr_twi_master.h"
-
-#define ADDR 0xD0       //8-bit adreesss
-#define READ ADDR | 1
-#define WRITE ADDR
 
 
 int main()
