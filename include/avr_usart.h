@@ -82,6 +82,7 @@ uint8_t USART_data_size();
 
 /* Send one byte: busy waiting */
 void USART_tx(uint8_t data);
+uint8_t USART_rx(void);
 
 /* Initializes USART end returns stream pointer  */
 FILE *USART_init(uint16_t bauds);
