@@ -4,6 +4,7 @@
 #include <avr/interrupt.h>
 
 #include "modbus_rtu.h"
+#include "mpu6050.h"
 
 static inline void crc_err()
 {
@@ -39,20 +40,25 @@ int main()
 
 	sei();
 
-	uint16_t sensor_data[4] = {3, 4, 5, 6};
+	mpu6050_init();
+
+	uint16_t* sensor_data[] = {&mpu.acer_x, &mpu.gyro_x};
 
 	uint8_t i = 0, crc_count = 0, timeout_count = 0;
 	while (1)
 	{
 		// non-blocking code que salva informações do sensor em sensor_data;
-
+		mpu6050_request();
+		
 		switch (modbus_rtu_check())
 		{
 		case MODBUS_RTU_RECEIVING:
 			break;
 		case MODBUS_RTU_READY:
 		case MODBUS_RTU_OK:
-			modbus_rtu_write(5 + i, sensor_data[i]);
+			mpu6050_convertData();
+			modbus_rtu_write(5 + i, sensor_data[i>>1][i & 1]);
+			
 			crc_count = 0;
 			timeout_count = 0;
 			PORTB &= ~((1 << PB5) | (1 << PB0) | (1 << PB1));
