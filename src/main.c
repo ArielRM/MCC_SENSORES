@@ -1,60 +1,89 @@
+#include <avr/io.h>
+#include <util/delay.h>
+#include <stdint.h>
 #include <avr/interrupt.h>
 
 #include "modbus_rtu.h"
 
-#define SENSOR_DATA_AX 0
-#define SENSOR_DATA_AY 1
-#define SENSOR_DATA_GX 2
-#define SENSOR_DATA_GY 3
-
-int main(void)
+static inline void crc_err()
 {
-	// inicialização i2c
+	PORTB |= (1 << PB5);
+	PORTB &= ~((1 << PB1) | (1 << PB0));
+}
+
+static inline void reg_err()
+{
+	PORTB |= (1 << PB5) | (1 << PB0);
+	PORTB &= ~((1 << PB1));
+}
+
+static inline void frame_err()
+{
+	PORTB |= (1 << PB5) | (1 << PB1);
+	PORTB &= ~((1 << PB0));
+}
+
+static inline void timeout()
+{
+	PORTB |= (1 << PB5) | (1 << PB1) | ((1 << PB0));
+}
+
+int main()
+{
+	// inicialização do sensor
+
 	modbus_rtu_init();
+
+	DDRB |= (1 << PB5) | (1 << PB0) | (1 << PB1);
+	PORTB &= ~((1 << PB5) | (1 << PB0) | (1 << PB1));
+
 	sei();
 
-	uint16_t sensor_data[4] = {0, 0, 0, 0};
-	enum
-	{
-		SEND_A_X = 0x05,
-		SEND_A_Y,
-		SEND_G_X,
-		SEND_G_Y,
-		SEND_SIZE,
-	} send_state = SEND_A_X;
+	uint16_t sensor_data[4] = {3, 4, 5, 6};
 
-	DDRB |= (1 << PB5);
-	PORTB &= ~(1 << PB5);
+	uint8_t i = 0, crc_count = 0, timeout_count = 0;
 	while (1)
 	{
-		/*
-			Parte do sensor
-			O resto da implementação espera que esse bloco seja non-blocking 
-			e que os valores obtidos sejam salvos em sensor_data[SENSOR_DATA_$Sensor$Eixo];
-		*/
+		// non-blocking code que salva informações do sensor em sensor_data;
 
-		/* TODO: Talvez seja melhor deixar esse trecho mais elegante e portável */
 		switch (modbus_rtu_check())
 		{
-		case MODBUS_RTU_BUSY:
+		case MODBUS_RTU_RECEIVING:
 			break;
+		case MODBUS_RTU_READY:
 		case MODBUS_RTU_OK:
-			if (modbus_rtu_write(send_state, sensor_data[send_state - SEND_A_X]))
-			{
-				if (++send_state == SEND_SIZE)
-					send_state = SEND_A_X;
-			}
+			modbus_rtu_write(5 + i, sensor_data[i]);
+			crc_count = 0;
+			timeout_count = 0;
+			PORTB &= ~((1 << PB5) | (1 << PB0) | (1 << PB1));
+			i++;
 			break;
-		case MODBUS_RTU_ERR_CRC:
-			break;
-		case MODBUS_RTU_ERR_REG:
-			PORTB |= (1 << PB5);
-			while (1)
+
+		case MODBUS_RTU_CRC_ERR:
+			crc_err();
+			while (++crc_count == 5)
 				;
 			break;
-		case MODBUS_RTU_ERR:
+
+		case MODBUS_RTU_REG_ERR:
+			reg_err();
+			break;
+
+		case MODBUS_RTU_FRAME_ERR:
+			frame_err();
+			break;
+
+		case MODBUS_RTU_TIMED_OUT:
+			timeout();
+			while (++timeout_count == 5)
+				;
+			break;
+
+		default:
 			break;
 		}
+
+		i &= 3;
 	}
 	return 0;
 }

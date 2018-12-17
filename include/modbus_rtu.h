@@ -1,21 +1,25 @@
 #ifndef _MODBUS_RTU_H
 #define _MODBUS_RTU_H
 
-#define MODBUS_RTU_ADDR 0x15
+#define MODBUS_RTU_ADDR ((uint8_t)0x15)
 
-#define MODBUS_RTU_CMD_W 0x01
-#define MODBUS_RTU_CMD_R 0x02
+#define MODBUS_RTU_CMD_W ((uint8_t)0x01)
+#define MODBUS_RTU_CMD_R ((uint8_t)0x02)
 
-#define MODBUS_RTU_CMD_CRC 0xFF
-#define MODBUS_RTU_CMD_REG 0xFE
+#define MODBUS_RTU_CMD_CRC ((uint8_t)0xFF)
+#define MODBUS_RTU_CMD_REG ((uint8_t)0xFE)
 
 typedef enum
 {
-	MODBUS_RTU_BUSY = 0,
+	MODBUS_RTU_RECEIVING = 0,
+	MODBUS_RTU_READY,
 	MODBUS_RTU_OK,
-	MODBUS_RTU_ERR_CRC,
-	MODBUS_RTU_ERR_REG,
-	MODBUS_RTU_ERR,
+	MODBUS_RTU_CRC_ERR,
+	MODBUS_RTU_REG_ERR,
+	MODBUS_RTU_FRAME_ERR,
+	MODBUS_RTU_UNK_ERR,
+	MODBUS_RTU_TIMED_OUT,
+	MODBUS_RTU_STATE_SIZE,
 } modbus_rtu_status_t;
 
 void modbus_rtu_init(void);

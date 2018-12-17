@@ -29,8 +29,8 @@ obj/%.o: src/%.c
 	$(CC) -c $< -o $@ $(CFLAGS) -MMD -MP
 
 arduino: $(HEX)
-	avrdude -pm328p -carduino -P/dev/ttyS3 -Uflash:w:$<:a
-	#                         -P/dev/ttyS(COMn)
+	avrdude -pm328p -b57600 -carduino -P/dev/ttyS4 -Uflash:w:$<:a
+	#avrdude -pm328p -carduino -P/dev/ttyS3 -Uflash:w:$<:a
 
 .PHONY: clean
 clean:
