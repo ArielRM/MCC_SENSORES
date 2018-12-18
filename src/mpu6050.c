@@ -64,7 +64,7 @@ static void mpu6050_req_acer()
             {
                 //pega os dados para um vetor
                 TWI_Get_Data_From_Transceiver(read_acer, 7);
-                PORTB ^= (1<<PB5);
+                //PORTB ^= (1<<PB5);
                 break;
             }
         }
@@ -88,7 +88,7 @@ static void mpu6050_req_gyro()
             {
                 //pega os dados para um vetor
                 TWI_Get_Data_From_Transceiver(read_gyro, 7);
-                PORTB ^= (1<<PB5);
+                //PORTB ^= (1<<PB5);
                 break;
             }
         }

@@ -2,7 +2,7 @@ NAME = MCC_PRJ
 
 CC = avr-gcc
 # Lembrar de remover -g depois de realizar os testes
-CFLAGS = -g -Wall -Os -Wl,--gc-sections -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega328p -DF_CPU=16000000UL -iquoteinclude
+CFLAGS = -Wall -Os -Wl,--gc-sections -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega328p -DF_CPU=16000000UL -iquoteinclude
 LDLIBS = 
 LDFLAGS = -mmcu=atmega328p
 
